@@ -1,0 +1,6 @@
+apiVersion: groupcontroller.hub.docker.com/v1alpha1
+kind: DemoController
+metadata:
+  name: democontroller-sample
+spec:
+  # TODO(user): Add fields here

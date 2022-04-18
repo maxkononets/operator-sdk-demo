@@ -1,0 +1,19 @@
+domain: hub.docker.com
+layout:
+- go.kubebuilder.io/v3
+plugins:
+  manifests.sdk.operatorframework.io/v2: {}
+  scorecard.sdk.operatorframework.io/v2: {}
+projectName: operator-sdk-demo
+repo: github.com/maxkononets/operator-sdk-demo
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: hub.docker.com
+  group: groupcontroller
+  kind: DemoController
+  path: github.com/maxkononets/operator-sdk-demo/api/v1alpha1
+  version: v1alpha1
+version: "3"
