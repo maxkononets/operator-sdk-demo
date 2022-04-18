@@ -41,6 +41,9 @@ type DemoControllerReconciler struct {
 //+kubebuilder:rbac:groups=groupcontroller.hub.docker.com,resources=democontrollers,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=groupcontroller.hub.docker.com,resources=democontrollers/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=groupcontroller.hub.docker.com,resources=democontrollers/finalizers,verbs=update
+//+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=core,resources=pods,verbs=get;list;
+
 func (r *DemoControllerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := ctrllog.FromContext(ctx)
 
