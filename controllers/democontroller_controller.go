@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	groupcontrollerv1alpha1 "github.com/maxkononets/operator-sdk-demo/api/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -25,6 +26,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/tools/record"
 	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -35,7 +37,8 @@ import (
 // DemoControllerReconciler reconciles a DemoController object
 type DemoControllerReconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
+	Scheme        *runtime.Scheme
+	EventRecorder record.EventRecorder
 }
 
 //+kubebuilder:rbac:groups=groupcontroller.hub.docker.com,resources=democontrollers,verbs=get;list;watch;create;update;patch;delete
@@ -43,6 +46,7 @@ type DemoControllerReconciler struct {
 //+kubebuilder:rbac:groups=groupcontroller.hub.docker.com,resources=democontrollers/finalizers,verbs=update
 //+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=core,resources=pods,verbs=get;list;
+// +kubebuilder:rbac:groups="",resources=events,verbs=create;patch
 
 func (r *DemoControllerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := ctrllog.FromContext(ctx)
@@ -86,7 +90,20 @@ func (r *DemoControllerReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 
 	// Ensure the deployment size is the same as the spec
 	size := demoController.Spec.Size
-	if *found.Spec.Replicas != size {
+	if *found.Spec.Replicas > size {
+		if *found.Spec.Replicas > size {
+			r.EventRecorder.Event(
+				found,
+				"Normal",
+				"AttemptToExceedReplicasThreshold",
+				fmt.Sprintf(
+					"Trying to set replicas to count to %d, but a maximum %d allowed",
+					*found.Spec.Replicas,
+					size,
+				),
+			)
+		}
+
 		found.Spec.Replicas = &size
 		err = r.Update(ctx, found)
 		if err != nil {

@@ -13,4 +13,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: eeebash/operator-sdk-demo
-  newTag: v.0.0.4
+  newTag: v0.1.1
