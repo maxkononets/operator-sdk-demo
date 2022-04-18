@@ -55,11 +55,11 @@ func (r *DemoControllerReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 			// Request object not found, could have been deleted after reconcile request.
 			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 			// Return and don't requeue
-			log.Info("Memcached resource not found. Ignoring since object must be deleted")
+			log.Info("DemoController resource not found. Ignoring since object must be deleted")
 			return ctrl.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
-		log.Error(err, "Failed to get Memcached")
+		log.Error(err, "Failed to get DemoController")
 		return ctrl.Result{}, err
 	}
 
@@ -124,7 +124,7 @@ func (r *DemoControllerReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		demoController.Status.Nodes = podNames
 		err := r.Status().Update(ctx, demoController)
 		if err != nil {
-			log.Error(err, "Failed to update Memcached status")
+			log.Error(err, "Failed to update DemoController status")
 			return ctrl.Result{}, err
 		}
 	}
@@ -132,7 +132,7 @@ func (r *DemoControllerReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 	return ctrl.Result{}, nil
 }
 
-// deploymentForDemoController returns a memcached Deployment object
+// deploymentForDemoController returns a DemoController Deployment object
 func (r *DemoControllerReconciler) deploymentForDemoController(m *groupcontrollerv1alpha1.DemoController) *appsv1.Deployment {
 	ls := labelsForDemoController(m.Name)
 	replicas := m.Spec.Size
@@ -163,13 +163,14 @@ func (r *DemoControllerReconciler) deploymentForDemoController(m *groupcontrolle
 			},
 		},
 	}
-	// Set Memcached instance as the owner and controller
+
+	// Set DemoController instance as the owner and controller
 	ctrl.SetControllerReference(m, dep, r.Scheme)
 	return dep
 }
 
 // labelsForDemoController returns the labels for selecting the resources
-// belonging to the given memcached CR name.
+// belonging to the given DemoController CR name.
 func labelsForDemoController(name string) map[string]string {
 	return map[string]string{"app": "nginx", "nginx_cr": name}
 }
